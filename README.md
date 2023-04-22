@@ -113,6 +113,13 @@ ubuntu-with-nmap   latest    04feaa0bbcf9   About a minute ago   150MB
 ubuntu             latest    08d22c0ceb15   6 weeks ago          77.8MB
 ```
 
+### Copy files to/from running container
+Bonus Tip:
+```text
+$ docker cp ./some_file $CONTAINER_ID:/work
+$ docker cp $CONTAINER_ID:/var/logs/ /tmp/app_logs
+
+```
 
 ## How to build image without Dockerfile
 
