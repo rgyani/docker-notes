@@ -129,3 +129,51 @@ Dockerfile is not the only mechanism to build docker files, the other popular me
 3. [img](https://github.com/genuinetools/img)
 4. [kaniko](https://github.com/GoogleContainerTools/kaniko) by Google
 5. [makisu](https://github.com/uber-archive/makisu) by Uber
+
+
+## Examining docker images
+
+```text
+$ docker save 6a80ab97b8b6 > examine.tar
+```
+
+This command will save the image as a tar file. Now we can use the familiar tar command to examine it:
+```text
+$ tar tvf examine.tar
+drwxr-xr-x 0/0               0 2023-04-23 07:57 12929ca1616d67036eaa0048a2c9ac6d56b9f65039b2079fc92f285846301afe/
+-rw-r--r-- 0/0               3 2023-04-23 07:57 12929ca1616d67036eaa0048a2c9ac6d56b9f65039b2079fc92f285846301afe/VERSION
+-rw-r--r-- 0/0             406 2023-04-23 07:57 12929ca1616d67036eaa0048a2c9ac6d56b9f65039b2079fc92f285846301afe/json
+-rw-r--r-- 0/0        80333312 2023-04-23 07:57 12929ca1616d67036eaa0048a2c9ac6d56b9f65039b2079fc92f285846301afe/layer.tar
+-rw-r--r-- 0/0            2933 2023-04-23 07:57 6a80ab97b8b67482ca6c73c31ef3a9cf7c1dfedb60e9bf533dd4d20cffd6a1b5.json
+drwxr-xr-x 0/0               0 2023-04-23 07:57 71274ef25ad86e4cfd3ac77097b264bc73f12f976f201c54b13f5b5cc37238e7/
+-rw-r--r-- 0/0               3 2023-04-23 07:57 71274ef25ad86e4cfd3ac77097b264bc73f12f976f201c54b13f5b5cc37238e7/VERSION
+-rw-r--r-- 0/0             482 2023-04-23 07:57 71274ef25ad86e4cfd3ac77097b264bc73f12f976f201c54b13f5b5cc37238e7/json
+-rw-r--r-- 0/0        42979840 2023-04-23 07:57 71274ef25ad86e4cfd3ac77097b264bc73f12f976f201c54b13f5b5cc37238e7/layer.tar
+drwxr-xr-x 0/0               0 2023-04-23 07:57 9861adcca2992f4654e45e2c435c21d69f348f689a8b30f17cac047fd481bf85/
+-rw-r--r-- 0/0               3 2023-04-23 07:57 9861adcca2992f4654e45e2c435c21d69f348f689a8b30f17cac047fd481bf85/VERSION
+-rw-r--r-- 0/0             482 2023-04-23 07:57 9861adcca2992f4654e45e2c435c21d69f348f689a8b30f17cac047fd481bf85/json
+-rw-r--r-- 0/0        43293184 2023-04-23 07:57 9861adcca2992f4654e45e2c435c21d69f348f689a8b30f17cac047fd481bf85/layer.tar
+drwxr-xr-x 0/0               0 2023-04-23 07:57 c8eaf77886dc980e1223259e68a961c98b862e08fa662d5f9233ce3085bc3b3c/
+-rw-r--r-- 0/0               3 2023-04-23 07:57 c8eaf77886dc980e1223259e68a961c98b862e08fa662d5f9233ce3085bc3b3c/VERSION
+-rw-r--r-- 0/0             482 2023-04-23 07:57 c8eaf77886dc980e1223259e68a961c98b862e08fa662d5f9233ce3085bc3b3c/json
+-rw-r--r-- 0/0        31068672 2023-04-23 07:57 c8eaf77886dc980e1223259e68a961c98b862e08fa662d5f9233ce3085bc3b3c/layer.tar
+drwxr-xr-x 0/0               0 2023-04-23 07:57 cf7c3b7951ccab9a183f80836046e09b74fa3d9d7a9889f834b113ccde013988/
+-rw-r--r-- 0/0               3 2023-04-23 07:57 cf7c3b7951ccab9a183f80836046e09b74fa3d9d7a9889f834b113ccde013988/VERSION
+-rw-r--r-- 0/0            1362 2023-04-23 07:57 cf7c3b7951ccab9a183f80836046e09b74fa3d9d7a9889f834b113ccde013988/json
+-rw-r--r-- 0/0         3532288 2023-04-23 07:57 cf7c3b7951ccab9a183f80836046e09b74fa3d9d7a9889f834b113ccde013988/layer.tar
+-rw-r--r-- 0/0             497 1970-01-01 01:00 manifest.json
+```
+
+
+### Diffs Between Two Docker Images
+We can use  Google's [container-diff](https://github.com/GoogleContainerTools/container-diff) 
+
+Some notes:
+1. There is a handy windows version also available, in case your WSL runs out of memory while comparing huge images
+2. To explicitly specify a local image, use the daemon:// prefix on the image name; similarly, for an explicitly remote image, use the remote:// prefix.
+3. I found it faster to first save the docker images you want to compare as tar and then examine them
+```text
+docker save <containerid1> > container1.tar
+docker save <containerid2> > container2.tar
+container-diff diff container1.tar container2.tar --type=file
+```
