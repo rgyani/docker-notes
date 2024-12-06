@@ -177,3 +177,39 @@ docker save <containerid1> > container1.tar
 docker save <containerid2> > container2.tar
 container-diff diff container1.tar container2.tar --type=file
 ```
+
+
+## Docker Architecture
+
+Docker's core architecture, revolves around Linux features like **namespaces and cgroups** (control groups). 
+
+### Namespaces
+Docker utilises Linux namespaces to create the illusion of isolation by partitioning kernel resources. Here’s a breakdown of how each namespace contributes.
+
+- **PID namespace**: Provides separate process ID trees, so each container believes it has its own PID space.
+- **NET namespace**: Gives each container its own network interfaces, routes, and firewall rules.
+- **MNT namespace**: Isolates the filesystem, allowing each container to have its own directory structure.
+- **IPC namespace**: Manages inter-process communication isolation, preventing containers from accessing each other’s message queues and semaphores.
+- **UTS namespace**: Offers hostname and domain isolation, making each container feel like it’s running on a unique machine.
+- **USER namespace**: Maps user IDs from the host to container-specific ranges, potentially offering a layer of privilege isolation.
+
+Here’s a simple example of creating a Docker container with user namespace isolation enabled.
+```
+docker run --rm -it --userns=remap busybox
+```
+
+### Control groups (cgroups)
+Cgroups limit and account for a container’s resource usage (CPU, memory, I/O, etc). This ensures that a container can’t hog system resources, providing stability in multi-container environments. For instance, you can limit a container’s memory the following way.
+
+```
+docker run -m 512m my-container
+```
+
+
+### Security comparison vs Virtual Machines
+Remember Docker is not VM!  
+Virtual machines operate with a hypervisor sitting directly on the hardware, creating completely independent environments. Each VM has its own dedicated OS, kernel, and everything else, which means they’re genuinely isolated from one another. Even if you manage to break into one VM, you’re still miles away from the others. That’s security in the real sense.
+
+
+While namespaces do a decent job of separating resources, they don’t offer airtight isolation. For example, if a container exploits a kernel vulnerability, it could potentially access other namespaces or even the host system. This risk makes namespaces inherently weaker than the isolation provided by hypervisors in virtual machines.
+
