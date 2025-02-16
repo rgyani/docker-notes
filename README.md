@@ -29,6 +29,10 @@ NO, a container is actually just a process running on the **Linux host**.
 The container process is isolated ([namespaces](https://docs.docker.com/engine/security/#kernel-namespaces)) from the rest of the system and restricted from both the resource consumption ([cgroups](https://docs.docker.com/engine/security/#control-groups)) and security ([capabilities](https://man7.org/linux/man-pages/man7/capabilities.7.html), [AppArmor](https://docs.docker.com/engine/security/apparmor/), [Seccomp](https://docs.docker.com/engine/security/seccomp/)) standpoints.   
 But in the end, this is still a regular process, same as any other process on the host system.
 
+- **Namespaces** → These act like invisible walls around the container, so it thinks it has its own environment (such as its own files, network, and processes), even though it shares the same OS as the host.
+- **cgroups (Control Groups)** → These limit how much CPU, memory, and other resources the container can use, preventing it from slowing down the whole system.
+- **Capabilities & Security** → Containers don’t get full system access by default, which helps keep them secure.
+
 ## How docker container images are created
 
 Let's understand the process by building a simple image using Dockerfile
